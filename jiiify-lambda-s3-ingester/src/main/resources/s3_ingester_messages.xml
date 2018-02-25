@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="message-class-name">info.freelibrary.jiiify.lambda.s3.ingester.MessageCodes</entry>
+
+  <!-- Messages to be stored in the MessageCodes class -->
+  <entry key="JLT-001">{}</entry>
+  <entry key="JLT-002">Unexpected S3 object content type: {}</entry>
+  <entry key="JLT-003">Error getting object {} from bucket {} (make sure they exist and your bucket is in the same region as this function)</entry>
+  <entry key="JLT-004">Unexpected S3 object content type: {}</entry>
+  <entry key="JLT-005">Tile size cannot be undefined</entry>
+  <entry key="JLT-006">A destination bucket for the tiles must be defined</entry>
+  <entry key="JLT-007">Invalid tile size: {} (setting to default value: 1024)</entry>
+  <entry key="JLT-008">Invalid batch size: {} (setting to default value: 1)</entry>
+  <entry key="JLT-009">Sending imaging request ({} tile{}) to: {}</entry>
+  <entry key="JLT-010">Processing request for a new tile: {}</entry>
+
+</properties>

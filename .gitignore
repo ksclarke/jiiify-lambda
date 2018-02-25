@@ -1,0 +1,6 @@
+# We download image files in the process of building
+jiiify-lambda-tiler/src/test/resources/images
+jiiify-lambda-imager/src/test/resources/images
+
+# Message codes are generated with the build
+**/generated

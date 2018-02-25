@@ -1,0 +1,10 @@
+{
+  "bucket" : "jiiify-tiler-ingest-bucket-us-west-1",
+  "tiles" : [
+    "jiiify-lambda-tiles-us-west-1/test/1024,1024,976,976/976,/0/default.jpg",
+    "jiiify-lambda-tiles-us-west-1/test/1024,0,976,1024/976,/0/default.jpg",
+    "jiiify-lambda-tiles-us-west-1/test/0,1024,1024,976/1024,/0/default.jpg",
+    "jiiify-lambda-tiles-us-west-1/test/0,0,1024,1024/1024,/0/default.jpg"
+  ],
+  "key" : "test.tif"
+}

@@ -1,0 +1,141 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>info.freelibrary</groupId>
+  <artifactId>jiiify-lambda-common</artifactId>
+  <name>Jiiify Lambda Common</name>
+  <description>A small collection of code used by various Jiiify Lambda submodules</description>
+  <packaging>jar</packaging>
+
+  <licenses>
+    <license>
+      <name>The 3-Clause BSD License</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:ksclarke/jiiify-lambda.git</connection>
+    <developerConnection>scm:git:git@github.com:ksclarke/jiiify-lambda.git</developerConnection>
+    <url>git@github.com:ksclarke/jiiify-lambda.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/ksclarke/jiiify-lambda/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <email>ksclarke@ksclarke.io</email>
+      <name>Kevin S. Clarke</name>
+      <url>http://kevinclarke.info</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
+
+  <properties>
+    <!-- Plugin versions -->
+    <codacy.plugin.version>1.0.2</codacy.plugin.version>
+
+    <!-- Build configuration properties -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>info.freelibrary</groupId>
+            <artifactId>freelib-resources</artifactId>
+            <version>${freelib.resources.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <stylesheetfile>javadocs.css</stylesheetfile>
+          <nonavbar>true</nonavbar>
+          <show>public</show>
+          <nosince>true</nosince>
+          <notimestamp>true</notimestamp>
+          <bottom> </bottom>
+          <detectLinks>false</detectLinks>
+          <additionalJOptions>
+            <additionalJOption>-J-Dhttp.agent=maven-javadoc-plugin-${project.name}</additionalJOption>
+          </additionalJOptions>
+          <links>
+            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+          </links>
+          <sourcepath>${project.basedir}/src/main/java:src/main/generated</sourcepath>
+        </configuration>
+        <executions>
+          <execution>
+            <id>site-javadocs</id>
+            <phase>site</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.gavinmogan</groupId>
+        <artifactId>codacy-maven-plugin</artifactId>
+        <version>${codacy.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${jacoco.agent.arg}</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Enables pushing project documentation up to an S3 bucket -->
+  <distributionManagement>
+    <site>
+      <id>s3.site</id>
+      <url>s3://projects.freelibrary.info/jiiify-lambda-common</url>
+    </site>
+  </distributionManagement>
+
+  <parent>
+    <groupId>info.freelibrary.jiiify.lambda</groupId>
+    <artifactId>jiiify-lambda</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+</project>

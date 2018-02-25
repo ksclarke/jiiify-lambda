@@ -1,0 +1,315 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>jiiify-lambda-s3-ingester</artifactId>
+  <name>Jiiify Lambda S3 Ingester</name>
+  <description>A Jiiify Lambda S3 ingester</description>
+  <packaging>jar</packaging>
+
+  <licenses>
+    <license>
+      <name>The 3-Clause BSD License</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:ksclarke/jiiify-lambda.git</connection>
+    <developerConnection>scm:git:git@github.com:ksclarke/jiiify-lambda.git</developerConnection>
+    <url>git@github.com:ksclarke/jiiify-lambda.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/ksclarke/jiiify-lambda/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <email>ksclarke@ksclarke.io</email>
+      <name>Kevin S. Clarke</name>
+      <url>http://kevinclarke.info</url>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
+
+  <properties>
+    <jiiify.image.version>0.0.2</jiiify.image.version>
+    <freelib.utils.version>0.8.6</freelib.utils.version>
+    <lambda.logging.version>1.0.0</lambda.logging.version>
+    <lambda.events.version>1.3.0</lambda.events.version>
+    <lambda.core.version>1.1.0</lambda.core.version>
+    <aws.sdk.version>1.11.271</aws.sdk.version>
+    <vertx.version>3.5.0</vertx.version>
+
+    <!-- Test dependencies -->
+    <mockito.version>2.7.22</mockito.version>
+
+    <!-- Plugin versions -->
+    <shade.plugin.version>3.0.0</shade.plugin.version>
+    <deploy.plugin.version>2.8.2</deploy.plugin.version>
+    <codacy.plugin.version>1.0.2</codacy.plugin.version>
+    <maven.download.plugin.version>1.3.0</maven.download.plugin.version>
+
+    <!-- Build configuration properties -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>info.freelibrary</groupId>
+      <artifactId>jiiify-lambda-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.symphonia</groupId>
+      <artifactId>lambda-logging</artifactId>
+      <version>${lambda.logging.version}</version>
+      <classifier>no-config</classifier>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.freelibrary</groupId>
+      <artifactId>jiiify-image</artifactId>
+      <version>${jiiify.image.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-core</artifactId>
+      <version>${lambda.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-events</artifactId>
+      <version>${lambda.events.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+      <version>${aws.sdk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-lambda</artifactId>
+      <version>${aws.sdk.version}</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Temporary plugin to make deploying easier -->
+      <plugin>
+        <groupId>com.github.davidmoten</groupId>
+        <artifactId>aws-maven-plugin</artifactId>
+        <version>0.2.16</version>
+        <configuration>
+          <serverId>awslambda</serverId>
+          <artifact>${project.build.directory}/${project.artifactId}-${project.version}.jar</artifact>
+          <functionName>JiiifyS3Ingester</functionName>
+          <region>us-west-1</region>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${shade.plugin.version}</version>
+        <configuration>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+          </transformers>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>info.freelibrary</groupId>
+        <artifactId>freelib-utils</artifactId>
+        <version>${freelib.utils.version}</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate-codes</goal>
+            </goals>
+            <configuration>
+              <generatedSourcesDirectory>${project.basedir}/src/main/generated</generatedSourcesDirectory>
+              <messageFiles>
+                <messageFile>${project.basedir}/src/main/resources/s3_ingester_messages.xml</messageFile>
+              </messageFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>${maven.download.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>install-test-images</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <!-- Download some test images too large to store in GitHub -->
+            <configuration>
+              <url>https://s3.amazonaws.com/ksclarke-data/jiiify-lambda-test-images.zip</url>
+              <unpack>true</unpack>
+              <outputDirectory>${project.basedir}/src/test/resources/images</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>info.freelibrary</groupId>
+            <artifactId>freelib-resources</artifactId>
+            <version>${freelib.resources.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <stylesheetfile>javadocs.css</stylesheetfile>
+          <nonavbar>true</nonavbar>
+          <show>public</show>
+          <nosince>true</nosince>
+          <notimestamp>true</notimestamp>
+          <bottom> </bottom>
+          <detectLinks>false</detectLinks>
+          <additionalJOptions>
+            <additionalJOption>-J-Dhttp.agent=maven-javadoc-plugin-${project.name}</additionalJOption>
+          </additionalJOptions>
+          <links>
+            <link>http://javadoc.io/page/io.airlift/airline/${airline.version}</link>
+            <link>https://google.github.io/guava/releases/${guava.version}/api/docs/</link>
+            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+          </links>
+          <sourcepath>${project.basedir}/src/main/java:${project.basedir}/src/main/generated</sourcepath>
+        </configuration>
+        <executions>
+          <execution>
+            <id>site-javadocs</id>
+            <phase>site</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-no-snapshots</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireReleaseDeps>
+                  <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                  <message>
+                      <![CDATA[Sorry, dependency snapshots are not allowed! To temporarily ignore this]]>
+                      <![CDATA[restriction add the following to the command line: -Denforcer.skip=true]]>
+                  </message>
+                  <excludes>
+                    <exclude>info.freelibrary:jiiify-lambda-common</exclude>
+                  </excludes>
+                </requireReleaseDeps>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.gavinmogan</groupId>
+        <artifactId>codacy-maven-plugin</artifactId>
+        <version>${codacy.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <environmentVariables>
+            <IMAGE_CONTENT_TYPE>image/tiff</IMAGE_CONTENT_TYPE>
+            <DERIVATIVE_BATCH_SIZE>3</DERIVATIVE_BATCH_SIZE>
+            <IIIF_SERVER_TILESIZE>1024</IIIF_SERVER_TILESIZE>
+            <DESTINATION_BUCKET>jiiify-lambda-tiles-us-west-1</DESTINATION_BUCKET>
+            <TEST_ENVIRONMENT>true</TEST_ENVIRONMENT>
+          </environmentVariables>
+          <systemPropertyVariables>
+            <vertx.port>${vertx.port}</vertx.port>
+            <vertx.logger-delegate-factory-class-name>io.vertx.core.logging.SLF4JLogDelegateFactory</vertx.logger-delegate-factory-class-name>
+          </systemPropertyVariables>
+          <argLine>${jacoco.agent.arg}</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Enables pushing project documentation up to an S3 bucket -->
+  <distributionManagement>
+    <site>
+      <id>s3.site</id>
+      <url>s3://projects.freelibrary.info/jiiify-lambda-s3-ingester</url>
+    </site>
+  </distributionManagement>
+
+  <parent>
+    <groupId>info.freelibrary.jiiify.lambda</groupId>
+    <artifactId>jiiify-lambda</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+</project>
